@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 project("hashing" VERSION 1.0
-        DESCRIPTION "A header only cmake/c++ library that exposes various non-cryptographic hash functions and reduction algorithms."
+        DESCRIPTION "A header only cmake/c++ library that exposes various state-of-the-art non-cryptographic hash functions and reduction algorithms."
         HOMEPAGE_URL "https://github.com/andreaskipf/hashing")
 
 # Declare library & directories to include. See
