@@ -1,3 +1,3 @@
 # Hashing
 
-A cmake/c++ interface library containing various state of the art hashing algorithms.
+A header only cmake/c++ library that exposes various non-cryptographic hash functions and reduction algorithms.
