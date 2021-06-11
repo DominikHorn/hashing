@@ -13,7 +13,7 @@
 
    #define neverinline __attribute__((noinline))
    #define packed __attribute__((packed))
-   #define aligned(bytes) __attribute__((aligned(bytes)))
+   #define align(bytes) __attribute__((aligned(bytes)))
    #define prefetch(address, mode, locality) __builtin_prefetch(address, mode, locality)
 
    #define full_mem_barrier __sync_synchronize()

@@ -24,7 +24,6 @@ ExternalProject_Add(
 
 # path to installed artifacts
 ExternalProject_Get_Property(${GOOGLEBENCHMARK_LIBRARY}_src install_dir)
-message(STATUS "INSTALL DIR: ${install_dir}")
 set(GOOGLEBENCHMARK_INCLUDE_DIR ${install_dir}/include)
 set(GOOGLEBENCHMARK_LIBRARY_PATH ${install_dir}/lib/libbenchmark.a)
 

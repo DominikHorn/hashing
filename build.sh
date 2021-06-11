@@ -21,6 +21,7 @@ cmake \
 # Build tests code
 cmake \
   --build ${BUILD_DIR} \
+  \ #--clean-first \
   -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
   -DCMAKE_C_COMPILER=${C_COMPILER}\
   -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
