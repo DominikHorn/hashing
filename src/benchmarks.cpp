@@ -6,7 +6,8 @@ static void BM_Incremet(benchmark::State& state) {
 
   // Benchmark code is within this loop
   for (auto _ : state) {
-    a++;
+    const auto res = a++;
+    benchmark::DoNotOptimize(res);
   }
 }
 
