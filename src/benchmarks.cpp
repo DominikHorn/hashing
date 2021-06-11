@@ -19,11 +19,22 @@ void BM_THROUGHPUT(benchmark::State& state) {
    }
 }
 
+using namespace hashing;
+using namespace reduction;
+
+#define BENCHMARK_THROUGHPUT(Hashfn)                               \
+   BENCHMARK_TEMPLATE(BM_THROUGHPUT, Hashfn, Fastrange<HASH_32>);  \
+   BENCHMARK_TEMPLATE(BM_THROUGHPUT, Hashfn, Fastrange<HASH_64>);  \
+   BENCHMARK_TEMPLATE(BM_THROUGHPUT, Hashfn, FastModulo<HASH_32>); \
+   BENCHMARK_TEMPLATE(BM_THROUGHPUT, Hashfn, FastModulo<HASH_64>);
+
 // Register benchmarks
-BENCHMARK_TEMPLATE(BM_THROUGHPUT, hashing::MultPrime32, hashing::reduction::FastModulo<HASH_32>);
-BENCHMARK_TEMPLATE(BM_THROUGHPUT, hashing::MultPrime64, hashing::reduction::FastModulo<HASH_32>);
-BENCHMARK_TEMPLATE(BM_THROUGHPUT, hashing::MurmurFinalizer<HASH_32>, hashing::reduction::FastModulo<HASH_32>);
-BENCHMARK_TEMPLATE(BM_THROUGHPUT, hashing::MurmurFinalizer<HASH_64>, hashing::reduction::FastModulo<HASH_32>);
+BENCHMARK_THROUGHPUT(MultPrime32)
+BENCHMARK_THROUGHPUT(MultPrime64)
+BENCHMARK_THROUGHPUT(MurmurFinalizer<HASH_32>)
+BENCHMARK_THROUGHPUT(MurmurFinalizer<HASH_64>)
+BENCHMARK_THROUGHPUT(AquaHash<HASH_32>)
+BENCHMARK_THROUGHPUT(AquaHash<HASH_64>)
 
 // Run the benchmarks
 BENCHMARK_MAIN();
