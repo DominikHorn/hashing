@@ -1,7 +1,6 @@
 Please note that major parts of this repository/code stem from other authors. 
-Their respective licenses are embedded inline within the file. For my
-modifications and code, the following license applies:
-
+Their respective licenses are embedded inline within those respective files. 
+For my personal modifications and code, the following license applies:
 
 Copyright 2021 Dominik Horn
 
