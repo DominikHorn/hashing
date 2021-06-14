@@ -35,7 +35,7 @@ namespace hashing::reduction {
       }
 
       static std::string name() {
-         return "do_nothing";
+         return "do_nothing" + std::to_string(sizeof(T) * 8);
       }
 
       constexpr forceinline T operator()(const T& hash) const {
@@ -58,7 +58,7 @@ namespace hashing::reduction {
       explicit Modulo(const size_t& num_buckets) : N(num_buckets) {}
 
       static std::string name() {
-         return "modulo";
+         return "modulo" + std::to_string(sizeof(T) * 8);
       }
 
       constexpr forceinline T operator()(const T& hash) const {
@@ -81,7 +81,7 @@ namespace hashing::reduction {
       explicit FastModulo(const size_t& num_buckets) : magic_div({static_cast<T>(num_buckets)}), N(num_buckets) {}
 
       static std::string name() {
-         return "fast_modulo";
+         return "fast_modulo" + std::to_string(sizeof(T) * 8);
       }
 
       forceinline T operator()(const T& hash) const {
@@ -107,7 +107,7 @@ namespace hashing::reduction {
          : magic_div({static_cast<T>(num_buckets)}), N(num_buckets) {}
 
       static std::string name() {
-         return "branchless_fast_modulo";
+         return "branchless_fast_modulo" + std::to_string(sizeof(T) * 8);
       }
 
       forceinline T operator()(const T& hash) const {
@@ -155,7 +155,7 @@ namespace hashing::reduction {
       explicit Clamp(const size_t& num_buckets) : N(num_buckets) {}
 
       static std::string name() {
-         return "clamp";
+         return "clamp" + std::to_string(sizeof(T) * 8);
       }
 
       /**
