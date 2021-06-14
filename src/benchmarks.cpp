@@ -63,7 +63,11 @@ int main(int argc, char** argv) {
    for (size_t i = 0; i < dataset_size; i++)
       dataset[i] = dist(rng_gen);
 
-   BENCHMARK_THROUGHPUT(hashing::MultPrime32, dataset);
+   BENCHMARK_THROUGHPUT(hashing::MultPrime64, dataset);
+   BENCHMARK_THROUGHPUT(hashing::Fibonacci64, dataset);
+   BENCHMARK_THROUGHPUT(hashing::FibonacciPrime64, dataset);
+   BENCHMARK_THROUGHPUT(hashing::AquaHash<HASH_64>, dataset);
+   BENCHMARK_THROUGHPUT(hashing::MurmurFinalizer<HASH_64>, dataset);
 
    benchmark::Initialize(&argc, argv);
    benchmark::RunSpecifiedBenchmarks();

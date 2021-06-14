@@ -239,6 +239,8 @@ namespace hashing {
          return "aqua" + std::to_string(select) + "_" + std::to_string(sizeof(T) * 8);
       }
 
+      AquaHash(){};
+
       forceinline T operator()(const T& value, const __m128i seed = _mm_setzero_si128()) const;
 
       //   forceinline __m128i operator()(const HASH_128& value, const __m128i seed = _mm_setzero_si128()) const {
