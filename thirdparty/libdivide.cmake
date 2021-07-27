@@ -2,7 +2,7 @@ include(ExternalProject)
 find_package(Git REQUIRED)
 
 # library name
-set(LIBDIVIDE_LIBRARY libdivide)
+set(LIBDIVIDE_LIBRARY ha_libdivide)
 
 ExternalProject_Add(
         ${LIBDIVIDE_LIBRARY}_src

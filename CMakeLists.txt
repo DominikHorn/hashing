@@ -4,8 +4,8 @@ project("hashing" VERSION 1.0
         HOMEPAGE_URL "https://github.com/andreaskipf/hashing")
 
 # Add thirdparty libraries to project scope
-include(${CMAKE_SOURCE_DIR}/thirdparty/googlebenchmark.cmake)
-include(${CMAKE_SOURCE_DIR}/thirdparty/libdivide.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/googlebenchmark.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/libdivide.cmake)
 
 # Declare library & directories to include. See
 # http://mariobadr.com/creating-a-header-only-library-with-cmake.html for more
