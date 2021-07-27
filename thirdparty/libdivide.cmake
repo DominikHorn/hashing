@@ -11,7 +11,6 @@ ExternalProject_Add(
         GIT_TAG v4.0.0
         TIMEOUT 10
         CMAKE_ARGS
-        -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/external/${LIBDIVIDE_LIBRARY}
 )
 
 # path to installed artifacts
@@ -21,8 +20,9 @@ ExternalProject_Get_Property(${LIBDIVIDE_LIBRARY}_src install_dir)
 add_library(${LIBDIVIDE_LIBRARY} INTERFACE)
 add_dependencies(${LIBDIVIDE_LIBRARY} ${LIBDIVIDE_LIBRARY}_src)
 target_include_directories(${LIBDIVIDE_LIBRARY} INTERFACE
-        $<BUILD_INTERFACE:${install_dir}/include>
+  $<BUILD_INTERFACE:${install_dir}/src/${LIBDIVIDE_LIBRARY}_src>
         )
 
 message(STATUS "[LIBDIVIDE] settings")
 message(STATUS "    LIBDIVIDE_LIBRARY = ${LIBDIVIDE_LIBRARY}")
+message(STATUS "    LIBDIVIDE_INSTALL_DIR = ${install_dir}")
