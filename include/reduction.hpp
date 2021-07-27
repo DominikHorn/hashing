@@ -71,11 +71,32 @@ namespace hashing::reduction {
 
    template<typename T>
    struct FastModulo {
-      const size_t N;
+      size_t N;
 
       // TODO(dominik): similar to https://github.com/peterboncz/bloomfilter-bsd/blob/master/src/dtl/div.hpp,
       //  we might want to filter out certain generated dividers to gain extra speed
       explicit FastModulo(const size_t& num_buckets) : N(num_buckets), magic_div({static_cast<T>(num_buckets)}) {}
+
+      ~FastModulo() = default;
+      FastModulo(const FastModulo& other) : N(other.N), magic_div({static_cast<T>(other.N)}) {}
+      FastModulo& operator=(const FastModulo& other) {
+         if (&other == this)
+            return *this;
+
+         N = other.N;
+         magic_div = other.magic_div;
+         return *this;
+      };
+
+      FastModulo(FastModulo&& other) = delete;
+      FastModulo& operator=(FastModulo&& other) noexcept {
+         if (&other == this)
+            return *this;
+
+         N = other.N;
+         magic_div = other.magic_div;
+         return *this;
+      }
 
       static std::string name() {
          return "fast_modulo" + std::to_string(sizeof(T) * 8);
@@ -91,7 +112,7 @@ namespace hashing::reduction {
       }
 
      private:
-      const libdivide::divider<T> magic_div;
+      libdivide::divider<T> magic_div;
    };
 
    template<typename T>
