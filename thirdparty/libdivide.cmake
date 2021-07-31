@@ -11,6 +11,7 @@ ExternalProject_Add(
         GIT_TAG v4.0.0
         TIMEOUT 10
         CMAKE_ARGS
+        INSTALL_COMMAND ""
 )
 
 # path to installed artifacts
