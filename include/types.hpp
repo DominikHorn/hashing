@@ -21,5 +21,5 @@ constexpr forceinline HASH_128 to_hash128(HASH_64 higher, HASH_64 lower) {
 
 struct HASH_256 {
    HASH_64 r0 = 0, r1 = 0, r2 = 0, r3 = 0;
-} aligned(16) packed;
+} alignit(16) packit;
 
