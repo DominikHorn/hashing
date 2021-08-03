@@ -67,6 +67,7 @@ int main(int argc, char** argv) {
    BENCHMARK_THROUGHPUT(hashing::Fibonacci64, dataset);
    BENCHMARK_THROUGHPUT(hashing::FibonacciPrime64, dataset);
    BENCHMARK_THROUGHPUT(hashing::AquaHash<HASH_64>, dataset);
+   BENCHMARK_THROUGHPUT(hashing::XXHash3<HASH_64>, dataset);
    BENCHMARK_THROUGHPUT(hashing::MurmurFinalizer<HASH_64>, dataset);
 
    benchmark::Initialize(&argc, argv);
