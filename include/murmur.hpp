@@ -136,7 +136,7 @@ namespace hashing {
 
          const auto* blocks = static_cast<const uint64_t*>(data);
 
-         for (int i = 0; i < nblocks; i++) {
+         for (size_t i = 0; i < nblocks; i++) {
             uint64_t k1 = getblock64(blocks, i * 2 + 0);
             uint64_t k2 = getblock64(blocks, i * 2 + 1);
 
