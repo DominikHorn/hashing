@@ -15,7 +15,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
 # Include required external libraries
-target_link_libraries(${PROJECT_NAME} INTERFACE ${LIBDIVIDE_LIBRARY})
+target_link_libraries(${PROJECT_NAME} INTERFACE libdivide)
 
 # Make IDE friendly
 target_sources(${PROJECT_NAME} INTERFACE hashing.hpp include/)
