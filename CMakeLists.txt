@@ -16,7 +16,7 @@ include(FetchContent)
 FetchContent_Declare(
   libdivide
   GIT_REPOSITORY https://github.com/ridiculousfish/libdivide.git
-  GIT_TAG master
+  GIT_TAG b322221677351ebb11f0a42fe9a9a2794da5bfe5
   )
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
