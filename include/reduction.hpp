@@ -15,9 +15,10 @@
 //#define LIBDIVIDE_NEON
 #include <libdivide.h>
 
-#include "convenience/builtins.hpp"
-#include "convenience/tidy.hpp"
 #include "types.hpp"
+
+// Order important
+#include "convenience/builtins.hpp"
 
 /**
  * Implements different reducers to map values from
