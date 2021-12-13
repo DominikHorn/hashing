@@ -30,9 +30,6 @@ target_link_libraries(${PROJECT_NAME} INTERFACE libdivide)
 # Make IDE friendly
 target_sources(${PROJECT_NAME} INTERFACE hashing.hpp include/)
 
-# Require c++20 for compilation
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
-
 # Benchmark code
 get_directory_property(hasParent PARENT_DIRECTORY)
 if (NOT hasParent)
