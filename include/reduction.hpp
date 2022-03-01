@@ -76,7 +76,8 @@ namespace hashing::reduction {
 
       // TODO(dominik): similar to https://github.com/peterboncz/bloomfilter-bsd/blob/master/src/dtl/div.hpp,
       //  we might want to filter out certain generated dividers to gain extra speed
-      explicit FastModulo(const size_t& num_buckets) : N(num_buckets), magic_div({static_cast<T>(num_buckets)}) {}
+      explicit FastModulo(const size_t& num_buckets)
+         : N(std::max(num_buckets, 1LU)), magic_div({static_cast<T>(std::max(num_buckets, 1LU))}) {}
 
       ~FastModulo() = default;
       FastModulo(const FastModulo& other) : N(other.N), magic_div({static_cast<T>(other.N)}) {}
