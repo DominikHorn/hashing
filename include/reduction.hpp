@@ -90,7 +90,7 @@ namespace hashing::reduction {
          return *this;
       };
 
-      FastModulo(FastModulo&& other) = delete;
+      FastModulo(FastModulo&& other) noexcept : N(other.N), magic_div({static_cast<T>(other.N)}) {}
       FastModulo& operator=(FastModulo&& other) noexcept {
          if (&other == this)
             return *this;
