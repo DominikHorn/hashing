@@ -1,16 +1,3 @@
-#pragma once
-
-#include <cstdint>
-#include <string>
-
-#include "convenience/builtins.hpp"
-#include "types.hpp"
-
-namespace hashing {
-   namespace _XXHash {
-// enable full inlining for xxhash code
-#define XXH_INLINE_ALL
-
 /*
  * xxHash - Extremely Fast Hash algorithm
  * Header File
@@ -88,6 +75,19 @@ Name     Speed on 64 bits    Speed on 32 bits
 XXH64       13.8 GB/s            1.9 GB/s
 XXH32        6.8 GB/s            6.0 GB/s
 */
+
+#pragma once
+
+#include <cstdint>
+#include <string>
+
+#include "convenience/builtins.hpp"
+#include "types.hpp"
+
+namespace hashing {
+   namespace _XXHash {
+// enable full inlining for xxhash code
+#define XXH_INLINE_ALL
 
 /* ****************************
  *  INLINE mode

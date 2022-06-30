@@ -1,3 +1,7 @@
+// This code is based on an idea presented by Donald Knuth
+// in his work "The Art of Computer Programming", Volume 3,
+// "Sorting and Searching"
+
 #pragma once
 
 #include <cassert>

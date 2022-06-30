@@ -1,19 +1,22 @@
+/**
+ * Much of the implementation was copied from Austin Appleby's original code:
+ * https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp (commit: 61a0530)
+ *
+ * Code had to be copied from .cpp file to facilitate inlining.
+ * This is afaik okay since Austin Appleby, the author, waived
+ * all copyright claims as he explicitely put this code into public domain
+ * (also see his comment at the top of his MurmurHash3.cpp file)
+ */
+
 #pragma once
 
+#include <stdexcept>
 #include <string>
 
 #include "convenience/builtins.hpp"
 #include "types.hpp"
 
 namespace hashing {
-   /**
- * Implementations taken from Austin Appleby's original code:
- * https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp (commit: 61a0530)
- *
- * Code had to be copied from .cpp file to facilitate inlining.
- * This is afaik okay since Austin Appleby, the author, waived
- * any copyright (see header comment in MurmurHash3.cpp)
- */
    template<class T>
    struct MurmurFinalizer {
       static std::string name() {
