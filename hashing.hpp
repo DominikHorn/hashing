@@ -6,6 +6,7 @@
 #include "include/mult.hpp"
 #include "include/murmur.hpp"
 #include "include/reduction.hpp"
+#include "include/tabulation.hpp"
 #include "include/xxh.hpp"
 
 // Order is important
