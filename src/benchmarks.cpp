@@ -72,6 +72,9 @@ void BenchmarkThroughput(const size_t& dataset_size) {
       BENCHMARK_THROUGHPUT(hashing::AquaHash<HASH_64>, dataset);
       BENCHMARK_THROUGHPUT(hashing::XXHash3<HASH_64>, dataset);
       BENCHMARK_THROUGHPUT(hashing::MurmurFinalizer<HASH_64>, dataset);
+      BENCHMARK_THROUGHPUT(hashing::CityHash64<HASH_64>, dataset);
+      BENCHMARK_THROUGHPUT(hashing::reduction::Lower<hashing::CityHash128<HASH_64>>, dataset);
+      BENCHMARK_THROUGHPUT(hashing::reduction::Higher<hashing::CityHash128<HASH_64>>, dataset);
    } else if constexpr (sizeof(T) == sizeof(uint32_t)) {
       BENCHMARK_BIASED_THROUGHPUT(hashing::MultPrime32, dataset);
       BENCHMARK_BIASED_THROUGHPUT(hashing::Fibonacci32, dataset);
@@ -79,6 +82,7 @@ void BenchmarkThroughput(const size_t& dataset_size) {
       BENCHMARK_THROUGHPUT(hashing::AquaHash<HASH_32>, dataset);
       BENCHMARK_THROUGHPUT(hashing::XXHash3<HASH_32>, dataset);
       BENCHMARK_THROUGHPUT(hashing::MurmurFinalizer<HASH_32>, dataset);
+      BENCHMARK_THROUGHPUT(hashing::CityHash32<HASH_32>, dataset);
    }
 }
 
