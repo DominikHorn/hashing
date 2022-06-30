@@ -7,12 +7,12 @@
 #include <benchmark/benchmark.h>
 
 template<class Hashfn, class Reductionfn, class Data>
-auto __BM_throughput = [](benchmark::State& state, const std::vector<Data>& dataset) {
+auto __BM_throughput = [](benchmark::State& state, const std::vector<Data>* dataset) {
    const Hashfn hashfn;
-   const Reductionfn reductionfn(dataset.size());
+   const Reductionfn reductionfn(dataset->size());
 
    for (auto _ : state) {
-      for (const auto& key : dataset) {
+      for (const auto& key : *dataset) {
          const auto hash = hashfn(key);
          const auto index = reductionfn(hash);
          benchmark::DoNotOptimize(index);
@@ -20,12 +20,12 @@ auto __BM_throughput = [](benchmark::State& state, const std::vector<Data>& data
    }
 
    state.SetLabel(Hashfn::name() + ":" + Reductionfn::name());
-   state.SetItemsProcessed(dataset.size() * static_cast<size_t>(state.iterations()));
-   state.SetBytesProcessed(dataset.size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
+   state.SetItemsProcessed(dataset->size() * static_cast<size_t>(state.iterations()));
+   state.SetBytesProcessed(dataset->size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
 };
 
 template<class Hashfn, class Reductionfn, class Data>
-auto __BM_collisions = [](benchmark::State& state, const std::vector<Data>& dataset) {
+auto __BM_collisions = [](benchmark::State& state, const std::vector<Data>* dataset) {
    const auto N = 1000;
    std::array<size_t, N> buckets;
    std::fill(buckets.begin(), buckets.end(), 0);
@@ -34,7 +34,7 @@ auto __BM_collisions = [](benchmark::State& state, const std::vector<Data>& data
    const Reductionfn reductionfn(N);
 
    for (auto _ : state) {
-      for (const auto& key : dataset) {
+      for (const auto& key : *dataset) {
          const auto hash = hashfn(key);
          const auto index = reductionfn(hash);
          buckets[index]++;
@@ -45,28 +45,28 @@ auto __BM_collisions = [](benchmark::State& state, const std::vector<Data>& data
       state.counters["bucket_" + std::to_string(i)] = buckets[i];
 
    state.SetLabel(Hashfn::name() + ":" + Reductionfn::name() + ":" + std::to_string(N));
-   state.SetItemsProcessed(dataset.size() * static_cast<size_t>(state.iterations()));
-   state.SetBytesProcessed(dataset.size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
+   state.SetItemsProcessed(dataset->size() * static_cast<size_t>(state.iterations()));
+   state.SetBytesProcessed(dataset->size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
 };
 
 template<class Hashfn, class Data>
-auto __BM_biased_throughput = [](benchmark::State& state, const std::vector<Data>& dataset) {
-   const Hashfn hashfn(dataset.size());
+auto __BM_biased_throughput = [](benchmark::State& state, const std::vector<Data>* dataset) {
+   const Hashfn hashfn(dataset->size());
 
    for (auto _ : state) {
-      for (const auto& key : dataset) {
+      for (const auto& key : *dataset) {
          const auto index = hashfn(key);
          benchmark::DoNotOptimize(index);
       }
    }
 
    state.SetLabel(Hashfn::name());
-   state.SetItemsProcessed(dataset.size() * static_cast<size_t>(state.iterations()));
-   state.SetBytesProcessed(dataset.size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
+   state.SetItemsProcessed(dataset->size() * static_cast<size_t>(state.iterations()));
+   state.SetBytesProcessed(dataset->size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
 };
 
 template<class Hashfn, class Data>
-auto __BM_biased_collisions = [](benchmark::State& state, const std::vector<Data>& dataset) {
+auto __BM_biased_collisions = [](benchmark::State& state, const std::vector<Data>* dataset) {
    const auto N = 1000;
    std::array<size_t, N> buckets;
    std::fill(buckets.begin(), buckets.end(), 0);
@@ -74,7 +74,7 @@ auto __BM_biased_collisions = [](benchmark::State& state, const std::vector<Data
    const Hashfn hashfn(N);
 
    for (auto _ : state) {
-      for (const auto& key : dataset) {
+      for (const auto& key : *dataset) {
          const auto index = hashfn(key);
          buckets[index]++;
       }
@@ -84,8 +84,8 @@ auto __BM_biased_collisions = [](benchmark::State& state, const std::vector<Data
       state.counters["bucket_" + std::to_string(i)] = buckets[i];
 
    state.SetLabel(Hashfn::name() + ":" + std::to_string(N));
-   state.SetItemsProcessed(dataset.size() * static_cast<size_t>(state.iterations()));
-   state.SetBytesProcessed(dataset.size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
+   state.SetItemsProcessed(dataset->size() * static_cast<size_t>(state.iterations()));
+   state.SetBytesProcessed(dataset->size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
 };
 
 #define BENCHMARK_UNIFORM(Hashfn, dataset)                                                                             \
@@ -112,17 +112,17 @@ auto __BM_biased_collisions = [](benchmark::State& state, const std::vector<Data
    benchmark::RegisterBenchmark("collisions", __BM_biased_collisions<Hashfn, T>, dataset)->Repetitions(1);
 
 template<class T>
-void BenchmarkThroughput(const size_t& dataset_size) {
+void BenchmarkThroughput(const size_t& dataset_size, std::vector<T>* dataset) {
    // generate uniform random numbers dataset
    std::default_random_engine rng_gen(42);
    std::uniform_int_distribution<T> dist(0, 1ULL << (sizeof(T) * 8 - 1));
 
-   std::vector<T> dataset;
-   dataset.reserve(dataset_size);
+   dataset->clear();
+   dataset->reserve(dataset_size);
    for (size_t i = 0; i < dataset_size; i++)
-      dataset.push_back(dist(rng_gen));
+      dataset->push_back(dist(rng_gen));
 
-   assert(dataset.size() == dataset_size);
+   assert(dataset->size() == dataset_size);
 
    static_assert(sizeof(T) == sizeof(uint64_t) || sizeof(T) == sizeof(uint32_t), "unimplemented benchmark");
    if constexpr (sizeof(T) == sizeof(uint64_t)) {
@@ -158,8 +158,10 @@ void BenchmarkThroughput(const size_t& dataset_size) {
 int main(int argc, char** argv) {
    const size_t dataset_size = 200'000'000ULL;
 
-   BenchmarkThroughput<uint32_t>(dataset_size);
-   BenchmarkThroughput<uint64_t>(dataset_size);
+   std::vector<uint32_t> ds_32;
+   BenchmarkThroughput<uint32_t>(dataset_size, &ds_32);
+   std::vector<uint64_t> ds_64;
+   BenchmarkThroughput<uint64_t>(dataset_size, &ds_64);
 
    benchmark::Initialize(&argc, argv);
    benchmark::RunSpecifiedBenchmarks();
