@@ -2,6 +2,7 @@
 
 #include "include/aqua.hpp"
 #include "include/city.hpp"
+#include "include/meow.hpp"
 #include "include/mult.hpp"
 #include "include/murmur.hpp"
 #include "include/reduction.hpp"

@@ -135,6 +135,9 @@ void BenchmarkThroughput(const size_t& dataset_size) {
       BENCHMARK_UNIFORM(hashing::CityHash64<HASH_64>, dataset);
       BENCHMARK_UNIFORM(hashing::reduction::Lower<hashing::CityHash128<HASH_64>>, dataset);
       BENCHMARK_UNIFORM(hashing::reduction::Higher<hashing::CityHash128<HASH_64>>, dataset);
+      BENCHMARK_UNIFORM(hashing::MeowHash64<HASH_64>, dataset);
+      BENCHMARK_UNIFORM(hashing::reduction::Lower<hashing::MeowHash128<HASH_64>>, dataset);
+      BENCHMARK_UNIFORM(hashing::reduction::Higher<hashing::MeowHash128<HASH_64>>, dataset);
    } else if constexpr (sizeof(T) == sizeof(uint32_t)) {
       BENCHMARK_BIASED(hashing::MultPrime32, dataset);
       BENCHMARK_BIASED(hashing::Fibonacci32, dataset);
@@ -143,6 +146,7 @@ void BenchmarkThroughput(const size_t& dataset_size) {
       BENCHMARK_UNIFORM(hashing::XXHash3<HASH_32>, dataset);
       BENCHMARK_UNIFORM(hashing::MurmurFinalizer<HASH_32>, dataset);
       BENCHMARK_UNIFORM(hashing::CityHash32<HASH_32>, dataset);
+      BENCHMARK_UNIFORM(hashing::MeowHash32<HASH_32>, dataset);
    }
 }
 
