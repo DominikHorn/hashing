@@ -31,8 +31,8 @@ namespace hashing::reduction {
     */
    template<class T>
    struct DoNothing {
-      explicit DoNothing(const size_t& num_buckets) {
-         UNUSED(num_buckets);
+      explicit DoNothing(const size_t& N) {
+         UNUSED(N);
       }
 
       static std::string name() {
@@ -375,7 +375,7 @@ constexpr forceinline HASH_32 hashing::reduction::Fastrange<HASH_32>::operator()
 template<>
 constexpr forceinline HASH_64 hashing::reduction::Fastrange<HASH_64>::operator()(const HASH_64& value) const {
 #ifdef __SIZEOF_INT128__
-   return static_cast<HASH_64>((static_cast<__uint128_t>(value) * static_cast<__uint128_t>(N)) >> 64);
+   return static_cast<HASH_64>((static_cast<HASH_128>(value) * static_cast<__uint128_t>(N)) >> 64);
 #else
    #warning \
       "Fastrange fallback (actual modulo) active, since 128bit integer multiplication seems to be unsupported on this system/compiler"
