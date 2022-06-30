@@ -20,8 +20,8 @@ auto __BM_throughput = [](benchmark::State& state, const std::vector<Data>& data
    }
 
    state.SetLabel(Hashfn::name() + ":" + Reductionfn::name());
-   state.SetItemsProcessed(dataset.size());
-   state.SetBytesProcessed(dataset.size() * sizeof(Data));
+   state.SetItemsProcessed(dataset.size() * static_cast<size_t>(state.iterations()));
+   state.SetBytesProcessed(dataset.size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
 };
 
 template<class Hashfn, class Data>
@@ -36,8 +36,8 @@ auto __BM_biased_throughput = [](benchmark::State& state, const std::vector<Data
    }
 
    state.SetLabel(Hashfn::name());
-   state.SetItemsProcessed(dataset.size());
-   state.SetBytesProcessed(dataset.size() * sizeof(Data));
+   state.SetItemsProcessed(dataset.size() * static_cast<size_t>(state.iterations()));
+   state.SetBytesProcessed(dataset.size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
 };
 
 #define BENCHMARK_THROUGHPUT(Hashfn, dataset)                                                                          \
@@ -87,7 +87,7 @@ void BenchmarkThroughput(const size_t& dataset_size) {
 }
 
 int main(int argc, char** argv) {
-   const size_t dataset_size = 500'000'000ULL;
+   const size_t dataset_size = 200'000'000ULL;
 
    BenchmarkThroughput<uint32_t>(dataset_size);
    BenchmarkThroughput<uint64_t>(dataset_size);
