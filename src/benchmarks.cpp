@@ -89,19 +89,27 @@ auto __BM_biased_collisions = [](benchmark::State& state, const std::vector<Data
 };
 
 #define BENCHMARK_UNIFORM(Hashfn, dataset)                                                                             \
-   benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::DoNothing<T>, T>, dataset);  \
-   benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::Fastrange<T>, T>, dataset);  \
-   benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::Modulo<T>, T>, dataset);     \
-   benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::FastModulo<T>, T>, dataset); \
+   benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::DoNothing<T>, T>, dataset)   \
+      ->Repetitions(10);                                                                                               \
+   benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::Fastrange<T>, T>, dataset)   \
+      ->Repetitions(10);                                                                                               \
+   benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::Modulo<T>, T>, dataset)      \
+      ->Repetitions(10);                                                                                               \
+   benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::FastModulo<T>, T>, dataset)  \
+      ->Repetitions(10);                                                                                               \
    benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::BranchlessFastModulo<T>, T>, \
-                                dataset);                                                                              \
-   benchmark::RegisterBenchmark("collisions", __BM_collisions<Hashfn, hashing::reduction::Fastrange<T>, T>, dataset);  \
-   benchmark::RegisterBenchmark("collisions", __BM_collisions<Hashfn, hashing::reduction::Modulo<T>, T>, dataset);     \
-   benchmark::RegisterBenchmark("collisions", __BM_collisions<Hashfn, hashing::reduction::FastModulo<T>, T>, dataset);
+                                dataset)                                                                               \
+      ->Repetitions(10);                                                                                               \
+   benchmark::RegisterBenchmark("collisions", __BM_collisions<Hashfn, hashing::reduction::Fastrange<T>, T>, dataset)   \
+      ->Repetitions(1);                                                                                                \
+   benchmark::RegisterBenchmark("collisions", __BM_collisions<Hashfn, hashing::reduction::Modulo<T>, T>, dataset)      \
+      ->Repetitions(1);                                                                                                \
+   benchmark::RegisterBenchmark("collisions", __BM_collisions<Hashfn, hashing::reduction::FastModulo<T>, T>, dataset)  \
+      ->Repetitions(1);
 
-#define BENCHMARK_BIASED(Hashfn, dataset)                                                  \
-   benchmark::RegisterBenchmark("throughput", __BM_biased_collisions<Hashfn, T>, dataset); \
-   benchmark::RegisterBenchmark("collisions", __BM_biased_collisions<Hashfn, T>, dataset);
+#define BENCHMARK_BIASED(Hashfn, dataset)                                                                   \
+   benchmark::RegisterBenchmark("throughput", __BM_biased_collisions<Hashfn, T>, dataset)->Repetitions(10); \
+   benchmark::RegisterBenchmark("collisions", __BM_biased_collisions<Hashfn, T>, dataset)->Repetitions(1);
 
 template<class T>
 void BenchmarkThroughput(const size_t& dataset_size) {
