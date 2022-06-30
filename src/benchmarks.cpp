@@ -24,32 +24,27 @@ auto __BM_throughput = [](benchmark::State& state, const std::vector<Data>* data
    state.SetBytesProcessed(dataset->size() * sizeof(Data));
 };
 
-#define BENCHMARK_THROUGHPUT(Hashfn, dataset)                                                                        \
-   benchmark::RegisterBenchmark(                                                                                     \
-      "throughput", __BM_throughput<Hashfn, hashing::reduction::Fastrange<HASH_32>, decltype(dataset)::value_type>,  \
-      &dataset);                                                                                                     \
-   benchmark::RegisterBenchmark(                                                                                     \
-      "throughput", __BM_throughput<Hashfn, hashing::reduction::Fastrange<HASH_64>, decltype(dataset)::value_type>,  \
-      &dataset);                                                                                                     \
-   benchmark::RegisterBenchmark(                                                                                     \
-      "throughput", __BM_throughput<Hashfn, hashing::reduction::Modulo<HASH_32>, decltype(dataset)::value_type>,     \
-      &dataset);                                                                                                     \
-   benchmark::RegisterBenchmark(                                                                                     \
-      "throughput", __BM_throughput<Hashfn, hashing::reduction::Modulo<HASH_64>, decltype(dataset)::value_type>,     \
-      &dataset);                                                                                                     \
-   benchmark::RegisterBenchmark(                                                                                     \
-      "throughput", __BM_throughput<Hashfn, hashing::reduction::FastModulo<HASH_32>, decltype(dataset)::value_type>, \
-      &dataset);                                                                                                     \
-   benchmark::RegisterBenchmark(                                                                                     \
-      "throughput", __BM_throughput<Hashfn, hashing::reduction::FastModulo<HASH_64>, decltype(dataset)::value_type>, \
-      &dataset);                                                                                                     \
-   benchmark::RegisterBenchmark(                                                                                     \
-      "throughput",                                                                                                  \
-      __BM_throughput<Hashfn, hashing::reduction::BranchlessFastModulo<HASH_32>, decltype(dataset)::value_type>,     \
-      &dataset);                                                                                                     \
-   benchmark::RegisterBenchmark(                                                                                     \
-      "throughput",                                                                                                  \
-      __BM_throughput<Hashfn, hashing::reduction::BranchlessFastModulo<HASH_64>, decltype(dataset)::value_type>,     \
+#define BENCHMARK_THROUGHPUT(Hashfn, dataset)                                                                          \
+   benchmark::RegisterBenchmark("throughput",                                                                          \
+                                __BM_throughput<Hashfn, hashing::reduction::DoNothing<decltype(dataset)::value_type>,  \
+                                                decltype(dataset)::value_type>,                                        \
+                                &dataset);                                                                             \
+   benchmark::RegisterBenchmark("throughput",                                                                          \
+                                __BM_throughput<Hashfn, hashing::reduction::Fastrange<decltype(dataset)::value_type>,  \
+                                                decltype(dataset)::value_type>,                                        \
+                                &dataset);                                                                             \
+   benchmark::RegisterBenchmark("throughput",                                                                          \
+                                __BM_throughput<Hashfn, hashing::reduction::Modulo<decltype(dataset)::value_type>,     \
+                                                decltype(dataset)::value_type>,                                        \
+                                &dataset);                                                                             \
+   benchmark::RegisterBenchmark("throughput",                                                                          \
+                                __BM_throughput<Hashfn, hashing::reduction::FastModulo<decltype(dataset)::value_type>, \
+                                                decltype(dataset)::value_type>,                                        \
+                                &dataset);                                                                             \
+   benchmark::RegisterBenchmark(                                                                                       \
+      "throughput",                                                                                                    \
+      __BM_throughput<Hashfn, hashing::reduction::BranchlessFastModulo<decltype(dataset)::value_type>,                 \
+                      decltype(dataset)::value_type>,                                                                  \
       &dataset);
 
 int main(int argc, char** argv) {

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cassert>
+#include <cstdint>
+#include <limits>
 #include <string>
 
 #include "convenience/builtins.hpp"
@@ -9,18 +11,17 @@
 namespace hashing {
    namespace _ {
       /**
-       * Multiplicative hashing, i.e., (x * constant % 2^w) >> (w - p)
+       * Multiplicative hashing, i.e., N * (x * A % 2^w) >> w
        *
-       * @tparam constant magic constant used to multiply
-       * @tparam p how many bits the result should have, i.e., result value \in [0, 2^p].
-       *   NOTE: 0 <= p <= sizeof(T)*8. Narrowing result to exactly the amount of required bits should
-       *   improve overall bit quality (avalanche)
+       * @tparam T output type
+       * @tparam A magic constant
        */
-      template<class T, const T constant, const char* base_name, const uint8_t p = sizeof(T) * 8>
+      template<class T, T A, const char* BaseName>
       struct MultiplicationHash {
+         MultiplicationHash(const T& N = std::numeric_limits<T>::max()) : N(N) {}
+
          static std::string name() {
-            return base_name + (p < sizeof(T) * 8 ? "_shift" + std::to_string(sizeof(T) * 8 - p) + "_" : "") +
-               std::to_string(sizeof(T) * 8);
+            return BaseName + std::to_string(sizeof(T) * 8);
          }
 
          /**
@@ -31,15 +32,49 @@ namespace hashing {
           * @param key the key to hash
           */
          constexpr forceinline T operator()(const T& key) const {
-            constexpr auto t = sizeof(T) * 8;
-            assert(p >= 0 && p <= t);
-            return (key * constant) >> (t - p);
+            if constexpr (sizeof(T) == 4)
+               return hash32(key);
+            return hash64(key);
+         };
+
+        private:
+         static const T w = sizeof(T) * 8; // bit width of output
+         const T N;
+
+         constexpr forceinline std::uint32_t hash32(const std::uint32_t& x) const {
+            // temporary register for computations
+            uint64_t tmp64;
+
+            // 1. x*A mod 2^w. Downcast is optional
+            // since x and A are already uint32_t
+            tmp64 = (uint32_t) (x * A);
+
+            // 2. multiply by N
+            tmp64 *= N;
+
+            // 3. shift to get result
+            return tmp64 >> w;
+         }
+
+         constexpr forceinline std::uint64_t hash64(const std::uint64_t& x) const {
+            // temporary register for computations
+            HASH_128 tmp128;
+
+            // 1. x*A mod 2^w. Downcast is optional
+            // since x and A are already uint64_t
+            tmp128 = (uint64_t) (x * A);
+
+            // 2. multiply by N
+            tmp128 *= N;
+
+            // 3. shift to get result
+            return tmp128 >> w;
          }
       };
 
-      const char MULT_PRIME[] = "mult_prime";
-      const char MULT_FIBONACCI[] = "mult_fibonacci";
-      const char MULT_FIBONACCI_PRIME[] = "mult_fibonacci_prime";
+      const char MULT_PRIME[] = "MultHash";
+      const char MULT_FIBONACCI[] = "MultFibonacci";
+      const char MULT_FIBONACCI_PRIME[] = "MultFibonacciPrime";
    } // namespace _
 
    /// Multiplicative 32-bit hashing with prime constants
@@ -56,25 +91,4 @@ namespace hashing {
    using FibonacciPrime32 = _::MultiplicationHash<HASH_32, 0x9e3779b1LU, _::MULT_FIBONACCI_PRIME>;
    /// Multiplicative 64-bit hashing with prime constants derived from the golden ratio
    using FibonacciPrime64 = _::MultiplicationHash<HASH_64, 0x9E3779B97F4A7C55LLU, _::MULT_FIBONACCI_PRIME>;
-
-   /// Multiplicative 32-bit hashing with prime constants
-   template<const uint8_t p = sizeof(HASH_32) * 8>
-   using MultPrimeShift32 = _::MultiplicationHash<HASH_32, 0x238EF8E3LU, _::MULT_PRIME, p>;
-   /// Multiplicative 64-bit hashing with prime constants
-   template<const uint8_t p = sizeof(HASH_64) * 8>
-   using MultPrimeShift64 = _::MultiplicationHash<HASH_64, 0xC7455FEC83DD661FLLU, _::MULT_PRIME, p>;
-
-   /// Multiplicative 32-bit hashing with constants derived from the golden ratio
-   template<const uint8_t p = sizeof(HASH_32) * 8>
-   using FibonacciShift32 = _::MultiplicationHash<HASH_32, 0x9E3779B9LU, _::MULT_FIBONACCI, p>;
-   /// Multiplicative 64-bit hashing with constants derived from the golden ratio
-   template<const uint8_t p = sizeof(HASH_64) * 8>
-   using FibonacciShift64 = _::MultiplicationHash<HASH_64, 0x9E3779B97F4A7C15LLU, _::MULT_FIBONACCI, p>;
-
-   /// Multiplicative 32-bit hashing with prime constants derived from the golden ratio
-   template<const uint8_t p = sizeof(HASH_32) * 8>
-   using FibonacciPrimeShift32 = _::MultiplicationHash<HASH_32, 0x9e3779b1LU, _::MULT_FIBONACCI_PRIME, p>;
-   /// Multiplicative 64-bit hashing with prime constants derived from the golden ratio
-   template<const uint8_t p = sizeof(HASH_64) * 8>
-   using FibonacciPrimeShift64 = _::MultiplicationHash<HASH_64, 0x9E3779B97F4A7C55LLU, _::MULT_FIBONACCI_PRIME, p>;
 } // namespace hashing
