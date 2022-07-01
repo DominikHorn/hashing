@@ -37,6 +37,8 @@ auto __BM_throughput = [](benchmark::State& state) {
    const Hashfn hashfn;
    const Reductionfn reductionfn(dataset.size());
 
+   // alternatively, we could hash once per outer loop iteration. However, the overhead due to
+   // gbench is too high for meaningful measurements of the fastest hashfns.
    for (auto _ : state) {
       for (const auto& key : dataset) {
          const auto hash = hashfn(key);
@@ -105,6 +107,8 @@ auto __BM_biased_throughput = [](benchmark::State& state) {
 
    const Hashfn hashfn(dataset.size());
 
+   // alternatively, we could hash once per outer loop iteration. However, the overhead due to
+   // gbench is too high for meaningful measurements of the fastest hashfns.
    for (auto _ : state) {
       for (const auto& key : dataset) {
          const auto index = hashfn(key);
@@ -179,7 +183,7 @@ auto __BM_biased_collisions = [](benchmark::State& state) {
       ->Iterations(1);
 
 #define BENCHMARK_BIASED(Hashfn)                                                 \
-   benchmark::RegisterBenchmark("throughput", __BM_biased_collisions<Hashfn, T>) \
+   benchmark::RegisterBenchmark("throughput", __BM_biased_throughput<Hashfn, T>) \
       ->ArgsProduct({throughput_ds_sizes, throughput_ds})                        \
       ->Repetitions(10);                                                         \
    benchmark::RegisterBenchmark("collisions", __BM_biased_collisions<Hashfn, T>) \
