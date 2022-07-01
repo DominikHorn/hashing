@@ -47,6 +47,7 @@ auto __BM_throughput = [](benchmark::State& state) {
       }
    }
 
+   state.counters["dataset_size"] = dataset.size();
    state.SetLabel(Hashfn::name() + ":" + Reductionfn::name() + ":" + dataset::name(ds_id));
    state.SetItemsProcessed(dataset.size() * static_cast<size_t>(state.iterations()));
    state.SetBytesProcessed(dataset.size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
@@ -85,6 +86,7 @@ auto __BM_collisions = [](benchmark::State& state) {
    for (size_t i = 0; i < N; i++)
       state.counters["bucket_" + std::to_string(i)] = buckets[i];
 
+   state.counters["dataset_size"] = dataset.size();
    state.SetLabel(Hashfn::name() + ":" + Reductionfn::name() + ":" + dataset::name(ds_id) + ":" + std::to_string(N));
    state.SetItemsProcessed(dataset.size() * static_cast<size_t>(state.iterations()));
    state.SetBytesProcessed(dataset.size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
@@ -116,6 +118,7 @@ auto __BM_biased_throughput = [](benchmark::State& state) {
       }
    }
 
+   state.counters["dataset_size"] = dataset.size();
    state.SetLabel(Hashfn::name() + ":" + dataset::name(ds_id));
    state.SetItemsProcessed(dataset.size() * static_cast<size_t>(state.iterations()));
    state.SetBytesProcessed(dataset.size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
@@ -152,6 +155,7 @@ auto __BM_biased_collisions = [](benchmark::State& state) {
    for (size_t i = 0; i < N; i++)
       state.counters["bucket_" + std::to_string(i)] = buckets[i];
 
+   state.counters["dataset_size"] = dataset.size();
    state.SetLabel(Hashfn::name() + ":" + dataset::name(ds_id) + ":" + std::to_string(N));
    state.SetItemsProcessed(dataset.size() * static_cast<size_t>(state.iterations()));
    state.SetBytesProcessed(dataset.size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
