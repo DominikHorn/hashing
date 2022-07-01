@@ -175,6 +175,7 @@ auto __BM_biased_collisions = [](benchmark::State& state) {
       ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                                              \
       ->Repetitions(10);                                                                                               \
    benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::BranchlessFastModulo<T>, T>) \
+      ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                                              \
       ->Repetitions(10);                                                                                               \
    benchmark::RegisterBenchmark("collisions", __BM_collisions<Hashfn, hashing::reduction::Fastrange<T>, T>)            \
       ->ArgsProduct({collision_ds_sizes, collision_ds})                                                                \
