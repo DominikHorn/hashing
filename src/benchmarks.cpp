@@ -170,13 +170,13 @@ auto __BM_biased_collisions = [](benchmark::State& state) {
       ->Repetitions(10);                                                                                               \
    benchmark::RegisterBenchmark("collisions", __BM_collisions<Hashfn, hashing::reduction::Fastrange<T>, T>)            \
       ->ArgsProduct({collision_ds_sizes, collision_ds})                                                                \
-      ->Repetitions(1);                                                                                                \
+      ->Iterations(1);                                                                                                 \
    benchmark::RegisterBenchmark("collisions", __BM_collisions<Hashfn, hashing::reduction::Modulo<T>, T>)               \
       ->ArgsProduct({collision_ds_sizes, collision_ds})                                                                \
-      ->Repetitions(1);                                                                                                \
+      ->Iterations(1);                                                                                                 \
    benchmark::RegisterBenchmark("collisions", __BM_collisions<Hashfn, hashing::reduction::FastModulo<T>, T>)           \
       ->ArgsProduct({collision_ds_sizes, collision_ds})                                                                \
-      ->Repetitions(1);
+      ->Iterations(1);
 
 #define BENCHMARK_BIASED(Hashfn)                                                 \
    benchmark::RegisterBenchmark("throughput", __BM_biased_collisions<Hashfn, T>) \
@@ -184,7 +184,7 @@ auto __BM_biased_collisions = [](benchmark::State& state) {
       ->Repetitions(10);                                                         \
    benchmark::RegisterBenchmark("collisions", __BM_biased_collisions<Hashfn, T>) \
       ->ArgsProduct({collision_ds_sizes, collision_ds})                          \
-      ->Repetitions(1);
+      ->Iterations(1);
 
 int main(int argc, char** argv) {
    {
