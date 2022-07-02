@@ -220,11 +220,7 @@ int main(int argc, char** argv) {
       BENCHMARK_UNIFORM(hashing::XXHash3<T>);
       BENCHMARK_UNIFORM(hashing::MurmurFinalizer<T>);
       BENCHMARK_UNIFORM(hashing::CityHash64<T>);
-      BENCHMARK_UNIFORM(hashing::reduction::Lower<hashing::CityHash128<T>>);
-      BENCHMARK_UNIFORM(hashing::reduction::Higher<hashing::CityHash128<T>>);
       BENCHMARK_UNIFORM(hashing::MeowHash64<T>);
-      BENCHMARK_UNIFORM(hashing::reduction::Lower<hashing::MeowHash128<T>>);
-      BENCHMARK_UNIFORM(hashing::reduction::Higher<hashing::MeowHash128<T>>);
       BENCHMARK_UNIFORM(hashing::TabulationHash<T>);
    }
 
