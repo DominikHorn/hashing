@@ -13,11 +13,10 @@
 
 namespace hashing {
 
-   template<class T, const T seed = 0, size_t COLUMNS = sizeof(T), size_t ROWS = std::numeric_limits<uint8_t>::max()>
+   template<class T, const T seed = 0, size_t COLUMNS = sizeof(T)>
    struct _TabulationHashImplementation {
       static std::string name() {
-         return "tabulation_" + std::to_string(COLUMNS) + "x" + std::to_string(ROWS) + "_" +
-            std::to_string(sizeof(T) * 8);
+         return "tabulation_" + std::to_string(COLUMNS) + "_" + std::to_string(sizeof(T) * 8);
       }
 
       /**
@@ -46,13 +45,16 @@ namespace hashing {
       constexpr forceinline T operator()(const T& key) const {
          T out = seed;
 
-         for (size_t i = 0; i < sizeof(T); i++)
-            out ^= table[i % COLUMNS][static_cast<uint8_t>(key >> (8 * i)) % ROWS];
+         for (size_t i = 0; i < sizeof(T); i++) {
+            const auto byte = static_cast<uint8_t>(key >> (8 * i));
+            out ^= table[i % COLUMNS][byte];
+         }
 
          return out;
       }
 
      private:
+      static const auto ROWS = 256;
       std::array<std::array<T, ROWS>, COLUMNS> table;
 
       void print_table() {
@@ -76,18 +78,18 @@ namespace hashing {
  * Small tabulation hash, i.e., single column
  */
    template<class T, const T seed = 0>
-   using SmallTabulationHash = _TabulationHashImplementation<T, seed, 1, 0xFF>;
+   using SmallTabulationHash = _TabulationHashImplementation<T, seed, 1>;
 
    /**
  * Medium tabulation hash, i.e., four columns
  */
    template<class T, const T seed = 0>
-   using MediumTabulationHash = _TabulationHashImplementation<T, seed, 4, 0xFF>;
+   using MediumTabulationHash = _TabulationHashImplementation<T, seed, 4>;
 
    /**
  * Large tabulation hash, i.e., eight columns
  */
    template<class T, const T seed = 0>
-   using LargeTabulationHash = _TabulationHashImplementation<T, seed, 8, 0xFF>;
+   using LargeTabulationHash = _TabulationHashImplementation<T, seed, 8>;
 
 } // namespace hashing
