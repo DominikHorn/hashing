@@ -10,14 +10,14 @@
 
 const std::vector<std::int64_t> throughput_ds_sizes{200'000'000};
 const std::vector<std::int64_t> throughput_ds{static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::UNIFORM)};
-const std::vector<std::int64_t> collision_ds_sizes{100'000'000};
-const std::vector<std::int64_t> collision_ds{static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::SEQUENTIAL),
-                                             static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::GAPPED_10),
-                                             static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::UNIFORM),
-                                             static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::BOOKS),
-                                             static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::FB),
-                                             static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::OSM),
-                                             static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::WIKI)};
+const std::vector<std::int64_t> scattering_ds_sizes{10'000'000};
+const std::vector<std::int64_t> scattering_ds{static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::SEQUENTIAL),
+                                              static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::GAPPED_10),
+                                              static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::UNIFORM),
+                                              static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::BOOKS),
+                                              static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::FB),
+                                              static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::OSM),
+                                              static_cast<std::underlying_type_t<dataset::ID>>(dataset::ID::WIKI)};
 
 template<class Hashfn, class Reductionfn, class Data>
 auto __BM_throughput = [](benchmark::State& state) {
@@ -54,7 +54,7 @@ auto __BM_throughput = [](benchmark::State& state) {
 };
 
 template<class Hashfn, class Reductionfn, class Data>
-auto __BM_collisions = [](benchmark::State& state) {
+auto __BM_scattering = [](benchmark::State& state) {
    const auto ds_size = state.range(0);
    const auto ds_id = static_cast<dataset::ID>(state.range(1));
 
@@ -68,7 +68,7 @@ auto __BM_collisions = [](benchmark::State& state) {
    std::default_random_engine rng(rd_dev());
    std::shuffle(dataset.begin(), dataset.end(), rng);
 
-   const auto N = 1000;
+   const auto N = 100;
    std::array<size_t, N> buckets;
    std::fill(buckets.begin(), buckets.end(), 0);
 
@@ -125,7 +125,7 @@ auto __BM_biased_throughput = [](benchmark::State& state) {
 };
 
 template<class Hashfn, class Data>
-auto __BM_biased_collisions = [](benchmark::State& state) {
+auto __BM_biased_scattering = [](benchmark::State& state) {
    const auto ds_size = state.range(0);
    const auto ds_id = static_cast<dataset::ID>(state.range(1));
 
@@ -139,7 +139,7 @@ auto __BM_biased_collisions = [](benchmark::State& state) {
    std::default_random_engine rng(rd_dev());
    std::shuffle(dataset.begin(), dataset.end(), rng);
 
-   const auto N = 1000;
+   const auto N = 100;
    std::array<size_t, N> buckets;
    std::fill(buckets.begin(), buckets.end(), 0);
 
@@ -177,22 +177,22 @@ auto __BM_biased_collisions = [](benchmark::State& state) {
    benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::BranchlessFastModulo<T>, T>) \
       ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                                              \
       ->Repetitions(10);                                                                                               \
-   benchmark::RegisterBenchmark("collisions", __BM_collisions<Hashfn, hashing::reduction::Fastrange<T>, T>)            \
-      ->ArgsProduct({collision_ds_sizes, collision_ds})                                                                \
+   benchmark::RegisterBenchmark("scattering", __BM_scattering<Hashfn, hashing::reduction::Fastrange<T>, T>)            \
+      ->ArgsProduct({scattering_ds_sizes, scattering_ds})                                                              \
       ->Iterations(1);                                                                                                 \
-   benchmark::RegisterBenchmark("collisions", __BM_collisions<Hashfn, hashing::reduction::Modulo<T>, T>)               \
-      ->ArgsProduct({collision_ds_sizes, collision_ds})                                                                \
+   benchmark::RegisterBenchmark("scattering", __BM_scattering<Hashfn, hashing::reduction::Modulo<T>, T>)               \
+      ->ArgsProduct({scattering_ds_sizes, scattering_ds})                                                              \
       ->Iterations(1);                                                                                                 \
-   benchmark::RegisterBenchmark("collisions", __BM_collisions<Hashfn, hashing::reduction::FastModulo<T>, T>)           \
-      ->ArgsProduct({collision_ds_sizes, collision_ds})                                                                \
+   benchmark::RegisterBenchmark("scattering", __BM_scattering<Hashfn, hashing::reduction::FastModulo<T>, T>)           \
+      ->ArgsProduct({scattering_ds_sizes, scattering_ds})                                                              \
       ->Iterations(1);
 
 #define BENCHMARK_BIASED(Hashfn)                                                 \
    benchmark::RegisterBenchmark("throughput", __BM_biased_throughput<Hashfn, T>) \
       ->ArgsProduct({throughput_ds_sizes, throughput_ds})                        \
       ->Repetitions(10);                                                         \
-   benchmark::RegisterBenchmark("collisions", __BM_biased_collisions<Hashfn, T>) \
-      ->ArgsProduct({collision_ds_sizes, collision_ds})                          \
+   benchmark::RegisterBenchmark("scattering", __BM_biased_scattering<Hashfn, T>) \
+      ->ArgsProduct({scattering_ds_sizes, scattering_ds})                        \
       ->Iterations(1);
 
 int main(int argc, char** argv) {
