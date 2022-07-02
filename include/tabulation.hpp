@@ -12,11 +12,10 @@
 #include "./convenience/builtins.hpp"
 
 namespace hashing {
-
-   template<class T, const T seed = 0, size_t COLUMNS = sizeof(T)>
-   struct _TabulationHashImplementation {
+   template<class T, const T seed = 0>
+   struct TabulationHash {
       static std::string name() {
-         return "tabulation_" + std::to_string(COLUMNS) + "_" + std::to_string(sizeof(T) * 8);
+         return "tabulation" + std::to_string(sizeof(T) * 8);
       }
 
       /**
@@ -25,7 +24,7 @@ namespace hashing {
        * @param table, must have 255 rows
        * @param seed defaults to 1
        */
-      _TabulationHashImplementation() {
+      TabulationHash() {
          std::random_device dev;
          std::default_random_engine rng(dev());
          std::uniform_int_distribution<T> dist(std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
@@ -55,6 +54,8 @@ namespace hashing {
 
      private:
       static const auto ROWS = 256;
+      static const auto COLUMNS = sizeof(T);
+
       std::array<std::array<T, ROWS>, COLUMNS> table;
 
       void print_table() {
@@ -73,23 +74,4 @@ namespace hashing {
          }
       }
    };
-
-   /**
- * Small tabulation hash, i.e., single column
- */
-   template<class T, const T seed = 0>
-   using SmallTabulationHash = _TabulationHashImplementation<T, seed, 1>;
-
-   /**
- * Medium tabulation hash, i.e., four columns
- */
-   template<class T, const T seed = 0>
-   using MediumTabulationHash = _TabulationHashImplementation<T, seed, 4>;
-
-   /**
- * Large tabulation hash, i.e., eight columns
- */
-   template<class T, const T seed = 0>
-   using LargeTabulationHash = _TabulationHashImplementation<T, seed, 8>;
-
 } // namespace hashing

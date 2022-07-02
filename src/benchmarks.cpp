@@ -207,8 +207,7 @@ int main(int argc, char** argv) {
       BENCHMARK_UNIFORM(hashing::MurmurFinalizer<T>);
       BENCHMARK_UNIFORM(hashing::CityHash32<T>);
       BENCHMARK_UNIFORM(hashing::MeowHash32<T>);
-      BENCHMARK_UNIFORM(hashing::SmallTabulationHash<T>);
-      BENCHMARK_UNIFORM(hashing::MediumTabulationHash<T>);
+      BENCHMARK_UNIFORM(hashing::TabulationHash<T>);
    }
 
    {
@@ -226,9 +225,7 @@ int main(int argc, char** argv) {
       BENCHMARK_UNIFORM(hashing::MeowHash64<T>);
       BENCHMARK_UNIFORM(hashing::reduction::Lower<hashing::MeowHash128<T>>);
       BENCHMARK_UNIFORM(hashing::reduction::Higher<hashing::MeowHash128<T>>);
-      BENCHMARK_UNIFORM(hashing::SmallTabulationHash<T>);
-      BENCHMARK_UNIFORM(hashing::MediumTabulationHash<T>);
-      BENCHMARK_UNIFORM(hashing::LargeTabulationHash<T>);
+      BENCHMARK_UNIFORM(hashing::TabulationHash<T>);
    }
 
    benchmark::Initialize(&argc, argv);
