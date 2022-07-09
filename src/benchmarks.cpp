@@ -45,6 +45,7 @@ auto __BM_throughput = [](benchmark::State& state) {
          const auto hash = hashfn(key);
          const auto index = reductionfn(hash);
          benchmark::DoNotOptimize(index);
+         __sync_synchronize();
       }
    }
 
@@ -116,6 +117,7 @@ auto __BM_biased_throughput = [](benchmark::State& state) {
       for (const auto& key : dataset) {
          const auto index = hashfn(key);
          benchmark::DoNotOptimize(index);
+         __sync_synchronize();
       }
    }
 
@@ -162,43 +164,68 @@ auto __BM_biased_scattering = [](benchmark::State& state) {
    state.SetBytesProcessed(dataset.size() * static_cast<size_t>(state.iterations()) * sizeof(Data));
 };
 
-#define BENCHMARK_UNIFORM(Hashfn)                                                                                      \
-   benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::DoNothing<T>, T>)            \
-      ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                                              \
-      ->Repetitions(10);                                                                                               \
-   benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::Fastrange<T>, T>)            \
-      ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                                              \
-      ->Repetitions(10);                                                                                               \
-   benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::Modulo<T>, T>)               \
-      ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                                              \
-      ->Repetitions(10);                                                                                               \
-   benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::FastModulo<T>, T>)           \
-      ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                                              \
-      ->Repetitions(10);                                                                                               \
-   benchmark::RegisterBenchmark("throughput", __BM_throughput<Hashfn, hashing::reduction::BranchlessFastModulo<T>, T>) \
-      ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                                              \
-      ->Repetitions(10);                                                                                               \
-   benchmark::RegisterBenchmark("scattering", __BM_scattering<Hashfn, hashing::reduction::Fastrange<T>, T>)            \
-      ->ArgsProduct({scattering_ds_sizes, scattering_ds})                                                              \
-      ->Iterations(1);                                                                                                 \
-   benchmark::RegisterBenchmark("scattering", __BM_scattering<Hashfn, hashing::reduction::Modulo<T>, T>)               \
-      ->ArgsProduct({scattering_ds_sizes, scattering_ds})                                                              \
-      ->Iterations(1);                                                                                                 \
-   benchmark::RegisterBenchmark("scattering", __BM_scattering<Hashfn, hashing::reduction::FastModulo<T>, T>)           \
-      ->ArgsProduct({scattering_ds_sizes, scattering_ds})                                                              \
+#define BENCHMARK_UNIFORM(Hashfn)                                                                            \
+   benchmark::RegisterBenchmark("throughput_sync_synchronize",                                               \
+                                __BM_throughput<Hashfn, hashing::reduction::DoNothing<T>, T>)                \
+      ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                                    \
+      ->Repetitions(10);                                                                                     \
+   benchmark::RegisterBenchmark("throughput_sync_synchronize",                                               \
+                                __BM_throughput<Hashfn, hashing::reduction::Fastrange<T>, T>)                \
+      ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                                    \
+      ->Repetitions(10);                                                                                     \
+   benchmark::RegisterBenchmark("throughput_sync_synchronize",                                               \
+                                __BM_throughput<Hashfn, hashing::reduction::Modulo<T>, T>)                   \
+      ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                                    \
+      ->Repetitions(10);                                                                                     \
+   benchmark::RegisterBenchmark("throughput_sync_synchronize",                                               \
+                                __BM_throughput<Hashfn, hashing::reduction::FastModulo<T>, T>)               \
+      ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                                    \
+      ->Repetitions(10);                                                                                     \
+   benchmark::RegisterBenchmark("throughput_sync_synchronize",                                               \
+                                __BM_throughput<Hashfn, hashing::reduction::BranchlessFastModulo<T>, T>)     \
+      ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                                    \
+      ->Repetitions(10);                                                                                     \
+   benchmark::RegisterBenchmark("scattering", __BM_scattering<Hashfn, hashing::reduction::Fastrange<T>, T>)  \
+      ->ArgsProduct({scattering_ds_sizes, scattering_ds})                                                    \
+      ->Iterations(1);                                                                                       \
+   benchmark::RegisterBenchmark("scattering", __BM_scattering<Hashfn, hashing::reduction::Modulo<T>, T>)     \
+      ->ArgsProduct({scattering_ds_sizes, scattering_ds})                                                    \
+      ->Iterations(1);                                                                                       \
+   benchmark::RegisterBenchmark("scattering", __BM_scattering<Hashfn, hashing::reduction::FastModulo<T>, T>) \
+      ->ArgsProduct({scattering_ds_sizes, scattering_ds})                                                    \
       ->Iterations(1);
 
-#define BENCHMARK_BIASED(Hashfn)                                                 \
-   benchmark::RegisterBenchmark("throughput", __BM_biased_throughput<Hashfn, T>) \
-      ->ArgsProduct({throughput_ds_sizes, throughput_ds})                        \
-      ->Repetitions(10);                                                         \
-   benchmark::RegisterBenchmark("scattering", __BM_biased_scattering<Hashfn, T>) \
-      ->ArgsProduct({scattering_ds_sizes, scattering_ds})                        \
+#define BENCHMARK_BIASED(Hashfn)                                                                  \
+   benchmark::RegisterBenchmark("throughput_sync_synchronize", __BM_biased_throughput<Hashfn, T>) \
+      ->ArgsProduct({throughput_ds_sizes, throughput_ds})                                         \
+      ->Repetitions(10);                                                                          \
+   benchmark::RegisterBenchmark("scattering_sync_synchronize", __BM_biased_scattering<Hashfn, T>) \
+      ->ArgsProduct({scattering_ds_sizes, scattering_ds})                                         \
       ->Iterations(1);
 
 int main(int argc, char** argv) {
+   // used to measure __sync_synchronize overhead
+   template<class T>
+   struct DoNothing {
+      static std::string name() {
+         return "DoNothing" + std::to_string(sizeof(T) * 8);
+      }
+
+      constexpr forceinline T operator()(const T& key) const {
+         return key;
+      }
+   };
+
    {
       using T = HASH_32;
+
+      benchmark::RegisterBenchmark("throughput_sync_synchronize",
+                                   __BM_throughput<DoNothing<T>, hashing::reduction::DoNothing<T>, T>)
+         ->ArgsProduct({throughput_ds_sizes, throughput_ds})
+         ->Repetitions(10);
+      benchmark::RegisterBenchmark("throughput_sync_synchronize", __BM_throughput<DoNothing<T>, T>)
+         ->ArgsProduct({throughput_ds_sizes, throughput_ds})
+         ->Repetitions(10);
 
       BENCHMARK_BIASED(hashing::MultPrime32);
       BENCHMARK_BIASED(hashing::Fibonacci32);
@@ -213,6 +240,14 @@ int main(int argc, char** argv) {
 
    {
       using T = HASH_64;
+
+      benchmark::RegisterBenchmark("throughput_sync_synchronize",
+                                   __BM_throughput<DoNothing<T>, hashing::reduction::DoNothing<T>, T>)
+         ->ArgsProduct({throughput_ds_sizes, throughput_ds})
+         ->Repetitions(10);
+      benchmark::RegisterBenchmark("throughput_sync_synchronize", __BM_throughput<DoNothing<T>, T>)
+         ->ArgsProduct({throughput_ds_sizes, throughput_ds})
+         ->Repetitions(10);
 
       BENCHMARK_BIASED(hashing::MultPrime64);
       BENCHMARK_BIASED(hashing::Fibonacci64);
