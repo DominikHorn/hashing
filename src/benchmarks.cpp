@@ -203,27 +203,24 @@ auto __BM_biased_scattering = [](benchmark::State& state) {
       ->ArgsProduct({scattering_ds_sizes, scattering_ds})                                         \
       ->Iterations(1);
 
+template<class T>
+struct DoNothing {
+   static std::string name() {
+      return "DoNothing" + std::to_string(sizeof(T) * 8);
+   }
+
+   constexpr forceinline T operator()(const T& key) const {
+      return key;
+   }
+};
+
 int main(int argc, char** argv) {
    // used to measure __sync_synchronize overhead
-   template<class T>
-   struct DoNothing {
-      static std::string name() {
-         return "DoNothing" + std::to_string(sizeof(T) * 8);
-      }
-
-      constexpr forceinline T operator()(const T& key) const {
-         return key;
-      }
-   };
-
    {
       using T = HASH_32;
 
       benchmark::RegisterBenchmark("throughput_sync_synchronize",
                                    __BM_throughput<DoNothing<T>, hashing::reduction::DoNothing<T>, T>)
-         ->ArgsProduct({throughput_ds_sizes, throughput_ds})
-         ->Repetitions(10);
-      benchmark::RegisterBenchmark("throughput_sync_synchronize", __BM_throughput<DoNothing<T>, T>)
          ->ArgsProduct({throughput_ds_sizes, throughput_ds})
          ->Repetitions(10);
 
@@ -243,9 +240,6 @@ int main(int argc, char** argv) {
 
       benchmark::RegisterBenchmark("throughput_sync_synchronize",
                                    __BM_throughput<DoNothing<T>, hashing::reduction::DoNothing<T>, T>)
-         ->ArgsProduct({throughput_ds_sizes, throughput_ds})
-         ->Repetitions(10);
-      benchmark::RegisterBenchmark("throughput_sync_synchronize", __BM_throughput<DoNothing<T>, T>)
          ->ArgsProduct({throughput_ds_sizes, throughput_ds})
          ->Repetitions(10);
 
